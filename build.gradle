@@ -21,12 +21,15 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     runtimeOnly 'com.h2database:h2'
     implementation group: 'io.awspring.cloud', name: 'spring-cloud-aws-starter', version: '3.2.1'
     implementation 'io.awspring.cloud:spring-cloud-aws-dependencies:3.2.1'
     implementation group: 'io.awspring.cloud', name: 'spring-cloud-aws-dynamodb', version: '3.2.1'
+    implementation 'com.auth0:java-jwt:4.4.0'
 }
 
 tasks.named('test') {
