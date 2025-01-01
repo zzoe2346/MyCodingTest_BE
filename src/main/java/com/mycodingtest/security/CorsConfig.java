@@ -1,4 +1,4 @@
-package com.mycodingtest.config;
+package com.mycodingtest.security;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
