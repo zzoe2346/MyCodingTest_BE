@@ -6,6 +6,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -37,10 +38,11 @@ public class SecurityConfig {
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((authorize) ->
                         authorize
-                                .requestMatchers("/","/sign-in", "/sign-up").permitAll()
+                                .requestMatchers("/","/sign-in", "/sign-up","/h2-console/**").permitAll()
                                 .requestMatchers("/admin").hasRole("ADMIN")
                                 .anyRequest().authenticated()
                 )
+                .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.sameOrigin())) // iframe 허용
                 .sessionManagement((session) -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
@@ -52,14 +54,4 @@ public class SecurityConfig {
     BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
-
-//
-//    private AuthenticationProvider authenticationProvider() {
-//        PasswordEncoder passwordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
-//        final DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-//        provider.setPasswordEncoder(passwordEncoder);
-//        provider.setUserDetailsService(customUserDetailService);
-//        return provider;
-//    }
 }
