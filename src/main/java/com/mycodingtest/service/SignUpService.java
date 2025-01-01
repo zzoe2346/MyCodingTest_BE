@@ -22,7 +22,7 @@ public class SignUpService {
     }
 
     public JwtResponse signUp(SignUpRequest request) {
-        boolean isUserExist = userRepository.existsByEmail(request.username());
+        boolean isUserExist = userRepository.existsByUsername(request.username());
 
         if (isUserExist) {
             throw new RuntimeException("Username already exists");
