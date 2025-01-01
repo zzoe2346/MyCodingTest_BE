@@ -29,7 +29,9 @@ dependencies {
     implementation group: 'io.awspring.cloud', name: 'spring-cloud-aws-starter', version: '3.2.1'
     implementation 'io.awspring.cloud:spring-cloud-aws-dependencies:3.2.1'
     implementation group: 'io.awspring.cloud', name: 'spring-cloud-aws-dynamodb', version: '3.2.1'
-    implementation 'com.auth0:java-jwt:4.4.0'
+    implementation 'io.jsonwebtoken:jjwt-api:0.12.6'
+    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.6'
+    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.6'
 }
 
 tasks.named('test') {
