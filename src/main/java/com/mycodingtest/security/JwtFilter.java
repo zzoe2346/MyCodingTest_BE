@@ -31,7 +31,6 @@ public class JwtFilter extends OncePerRequestFilter {
         String token;
         String username = null;
 
-
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             token = authorizationHeader.substring(7);
             username = jwtUtil.validateAndExtractUsername(token);
@@ -50,6 +49,6 @@ public class JwtFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         String path = request.getServletPath();
-        return "/sign-up".equals(path) || "/sign-in".equals(path);
+        return path.startsWith("/sign-in") || path.startsWith("/sign-up") || path.startsWith("/h2-console");
     }
 }
