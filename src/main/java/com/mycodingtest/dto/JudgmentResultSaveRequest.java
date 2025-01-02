@@ -4,11 +4,11 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.time.LocalDateTime;
 
-public record SaveJudgmentResultRequest(
+public record JudgmentResultSaveRequest(
         String code,
         Long submissionId,
         String baekjoonId,
-        int problemId,
+        int problemNumber,
         String problemTitle,
         String resultText,
         int memory,
@@ -19,6 +19,3 @@ public record SaveJudgmentResultRequest(
         LocalDateTime submittedAt
 ) {
 }
-
-
-

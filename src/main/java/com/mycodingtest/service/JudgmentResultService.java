@@ -1,58 +1,64 @@
 package com.mycodingtest.service;
 
 import com.mycodingtest.dto.JudgmentResultResponse;
-import com.mycodingtest.dto.SaveJudgmentResultRequest;
+import com.mycodingtest.dto.JudgmentResultSaveRequest;
 import com.mycodingtest.dynamoDbBean.Code;
 import com.mycodingtest.entity.JudgmentResult;
-import com.mycodingtest.entity.ProblemSolvingStatus;
+import com.mycodingtest.entity.Review;
+import com.mycodingtest.entity.SolvedProblem;
 import com.mycodingtest.entity.User;
 import com.mycodingtest.repository.JudgmentResultRepository;
-import com.mycodingtest.repository.ProblemSolvingStatusRepository;
+import com.mycodingtest.repository.SolvedProblemRepository;
+import com.mycodingtest.repository.UserRepository;
 import io.awspring.cloud.dynamodb.DynamoDbTemplate;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import software.amazon.awssdk.enhanced.dynamodb.Key;
+
+import java.util.List;
+import java.util.Objects;
 
 @Service
 public class JudgmentResultService {
 
     private final DynamoDbTemplate dynamoDbTemplate;
     private final JudgmentResultRepository judgmentResultRepository;
-    private final ProblemSolvingStatusRepository problemSolvingStatusRepository;
-    static final Long userId = 1L; // for dev
-    static final User user = new User(); // for dev
+    private final SolvedProblemRepository solvedProblemRepository;
+    private final UserRepository userRepository;
 
-    public JudgmentResultService(DynamoDbTemplate dynamoDbTemplate, JudgmentResultRepository judgmentResultRepository, ProblemSolvingStatusRepository problemSolvingStatusRepository) {
-        this.problemSolvingStatusRepository = problemSolvingStatusRepository;
+    public JudgmentResultService(DynamoDbTemplate dynamoDbTemplate, JudgmentResultRepository judgmentResultRepository, SolvedProblemRepository solvedProblemRepository, UserRepository userRepository) {
+        this.solvedProblemRepository = solvedProblemRepository;
         this.dynamoDbTemplate = dynamoDbTemplate;
         this.judgmentResultRepository = judgmentResultRepository;
+        this.userRepository = userRepository;
     }
 
-    public void saveJudgmentResult(SaveJudgmentResultRequest request) {
-        ProblemSolvingStatus problemSolvingStatus = problemSolvingStatusRepository.findByProblemIdAndUserId(request.problemId(), userId)
-                .orElse(new ProblemSolvingStatus(user, request.problemId(), request.problemTitle()));
+    @Transactional
+    public void saveJudgmentResult(JudgmentResultSaveRequest request, Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
-        problemSolvingStatus.setRecentSubmitAt(request.submittedAt());
-        problemSolvingStatus.setRecentResultText(request.resultText());
+        SolvedProblem solvedProblem = solvedProblemRepository.findByUserIdAndProblemNumber(userId, request.problemNumber())
+                .orElse(new SolvedProblem(request.problemNumber(), request.problemTitle(), user, new Review(user)));
 
-        problemSolvingStatusRepository.save(problemSolvingStatus);
-        dynamoDbTemplate.save(new Code(userId, request.problemId() + "#" + request.submissionId(), request.code()));
-        judgmentResultRepository.save(new JudgmentResult(request.baekjoonId(), request.codeLength(), request.submissionId(), request.language(), request.memory(), request.problemId(), request.resultText(), request.submissionId(), request.submittedAt(), request.time()));
+        solvedProblem.setRecentSubmitAt(request.submittedAt());
+        solvedProblem.setRecentResultText(request.resultText());
+
+        Long solvedProblemId = solvedProblemRepository.save(solvedProblem).getId();
+        Long judgmentId = judgmentResultRepository.save(new JudgmentResult(request.baekjoonId(), request.codeLength(), request.submissionId(), request.language(), request.memory(), request.problemNumber(), request.resultText(), request.submissionId(), request.submittedAt(), request.time(), user, solvedProblem)).getId();
+
+        dynamoDbTemplate.save(new Code(solvedProblemId, judgmentId, request.code()));
     }
 
-    public String getSubmittedCode(int problemId, Long submissionId) {
-        return dynamoDbTemplate.load(Key.builder().partitionValue(userId).sortValue(problemId + "#" + submissionId).build(), Code.class).toString();
+    public String getSubmittedCode(Long solvedProblem, Long judgmentId) {
+        return Objects.requireNonNull(dynamoDbTemplate.load(Key.builder().partitionValue(solvedProblem).sortValue(judgmentId).build(), Code.class)).getContent();
     }
 
-    public JudgmentResultResponse getJudgmentResult(Long judgmentResultId) {
-        JudgmentResult judgmentResult = judgmentResultRepository.findById(judgmentResultId)
-                .orElseThrow(() -> new RuntimeException("JudgmentResult not found"));
-
-        return new JudgmentResultResponse(judgmentResult.getSubmissionId(), judgmentResult.getBaekjoonId(), judgmentResult.getProblemId(), judgmentResult.getResultText(), judgmentResult.getMemory(), judgmentResult.getTime(), judgmentResult.getLanguage(), judgmentResult.getCodeLength(), judgmentResult.getSubmittedAt());
-    }
-
-    public Page<JudgmentResult> getJudgmentResultPagenationByUserId(Long userId, Pageable pageable) {
-        return judgmentResultRepository.findJudgmentResultsByUserId(userId, pageable);
+    @Transactional(readOnly = true)
+    public List<JudgmentResultResponse> getJudgmentResultList(Long solvedProblemId) {
+        return judgmentResultRepository.findBySolvedProblemId(solvedProblemId).stream()
+                .map(judgmentResult -> new JudgmentResultResponse(judgmentResult.getSubmissionId(), judgmentResult.getBaekjoonId(), judgmentResult.getProblemId(), judgmentResult.getResultText(), judgmentResult.getMemory(), judgmentResult.getTime(), judgmentResult.getLanguage(), judgmentResult.getCodeLength(), judgmentResult.getSubmittedAt()))
+                .toList();
     }
 }

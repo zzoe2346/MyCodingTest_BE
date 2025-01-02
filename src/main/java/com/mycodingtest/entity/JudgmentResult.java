@@ -1,31 +1,40 @@
 package com.mycodingtest.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
 
 @Entity
 public class JudgmentResult {
-
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(nullable = false)
     private Long submissionId;
+    @Column(nullable = false)
     private String baekjoonId;
+    @Column(nullable = false)
     private int problemId;
+    @Column(nullable = false)
     private String resultText;
+    @Column(nullable = false)
     private int memory;
+    @Column(nullable = false)
     private int time;
+    @Column(nullable = false)
     private String language;
+    @Column(nullable = false)
     private int codeLength;
+    @Column(nullable = false)
     private LocalDateTime submittedAt;
     @ManyToOne
+    @JoinColumn(nullable = false)
     private User user;
     @ManyToOne
-    private ProblemSolvingStatus problemSolvingStatus;
+    @JoinColumn(nullable = false)
+    private SolvedProblem solvedProblem;
 
-    public JudgmentResult(String baekjoonId, int codeLength, Long id, String language, int memory, int problemId, String resultText, Long submissionId, LocalDateTime submittedAt, int time) {
+    public JudgmentResult(String baekjoonId, int codeLength, Long id, String language, int memory, int problemId, String resultText, Long submissionId, LocalDateTime submittedAt, int time, User user, SolvedProblem solvedProblem) {
         this.baekjoonId = baekjoonId;
         this.codeLength = codeLength;
         this.id = id;
@@ -36,6 +45,8 @@ public class JudgmentResult {
         this.submissionId = submissionId;
         this.submittedAt = submittedAt;
         this.time = time;
+        this.user = user;
+        this.solvedProblem = solvedProblem;
     }
 
     protected JudgmentResult() {

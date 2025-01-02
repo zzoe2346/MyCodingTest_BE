@@ -1,13 +1,16 @@
 package com.mycodingtest.controller;
 
 import com.mycodingtest.dto.JudgmentResultResponse;
-import com.mycodingtest.dto.SaveJudgmentResultRequest;
-import com.mycodingtest.entity.JudgmentResult;
+import com.mycodingtest.dto.JudgmentResultSaveRequest;
+import com.mycodingtest.dto.SubmittedCodeResponse;
+import com.mycodingtest.security.UserDetails;
 import com.mycodingtest.service.JudgmentResultService;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 public class JudgmentResultController {
@@ -18,28 +21,23 @@ public class JudgmentResultController {
         this.judgmentResultService = judgmentResultService;
     }
 
-    @PostMapping("/api/judgment")
-    public ResponseEntity<String> saveJudgmentResult(@RequestBody SaveJudgmentResultRequest request) {
-        judgmentResultService.saveJudgmentResult(request);
-        return ResponseEntity.ok("Judgment-Result saved successfully");
+    @PostMapping("/api/solved-problems/judgment-results")
+    public ResponseEntity<String> saveJudgmentResult(@RequestBody JudgmentResultSaveRequest request,
+                                                     @AuthenticationPrincipal UserDetails userDetails) {
+        judgmentResultService.saveJudgmentResult(request, userDetails.getUserId());
+        return ResponseEntity.status(HttpStatus.CREATED).body("JudgmentResult saved successfully");
     }
 
-    @GetMapping("/api/judgment/result")
-    public ResponseEntity<Page<JudgmentResult>> getJudgmentResult(Pageable pageable) {
-        Long userId = 1L;
-        Page<JudgmentResult> judgmentResultPage = judgmentResultService.getJudgmentResultPagenationByUserId(userId, pageable);
-        return ResponseEntity.ok(judgmentResultPage);
+    @GetMapping("/api/solved-problems/{solvedProblemId}/judgment-results")
+    public ResponseEntity<List<JudgmentResultResponse>> getJudgmentResultList(@PathVariable Long solvedProblemId) {
+        List<JudgmentResultResponse> judgmentResultList = judgmentResultService.getJudgmentResultList(solvedProblemId);
+        return ResponseEntity.ok(judgmentResultList);
     }
 
-    @GetMapping("/api/judgment/result/{judgmentResultId}")
-    public ResponseEntity<JudgmentResultResponse> getJudgmentResult(@PathVariable Long judgmentResultId) {
-        JudgmentResultResponse response = judgmentResultService.getJudgmentResult(judgmentResultId);
-        return ResponseEntity.ok(response);
-    }
-
-    @GetMapping("/api/judgment/submitted-code")
-    public ResponseEntity<String> getSubmittedCode(@RequestParam int problemId, Long submissionId) {
-        judgmentResultService.getSubmittedCode(problemId, submissionId);
-        return ResponseEntity.ok("Judgment-Result saved successfully");
+    @GetMapping("/api/solved-problems/{solvedProblemId}/judgment-results/{judgmentId}/submitted-code")
+    public ResponseEntity<SubmittedCodeResponse> getSubmittedCode(@PathVariable Long solvedProblemId,
+                                                                  @PathVariable Long judgmentId) {
+        String code = judgmentResultService.getSubmittedCode(solvedProblemId, judgmentId);
+        return ResponseEntity.ok(new SubmittedCodeResponse(code));
     }
 }

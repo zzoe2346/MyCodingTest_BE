@@ -6,48 +6,30 @@ import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbSortK
 
 @DynamoDbBean
 public class Code {
-
-    Long userId;
-    String problemSubmissionId;
+    Long solveProblemId;
+    Long judgmentResultId;
     String content;
 
-    public Code(Long userId, String problemSubmissionId, String content) {
+    public Code(Long solveProblemId, Long judgmentResultId, String content) {
         this.content = content;
-        this.problemSubmissionId = problemSubmissionId;
-        this.userId = userId;
+        this.judgmentResultId = judgmentResultId;
+        this.solveProblemId = solveProblemId;
     }
 
-    public Code() {
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    @DynamoDbSortKey
-    public String getProblemSubmissionId() {
-        return problemSubmissionId;
+    protected Code() {
     }
 
     @DynamoDbPartitionKey
-    public Long getUserId() {
-        return userId;
+    public Long getSolveProblemId() {
+        return solveProblemId;
     }
 
-    public void setContent(String content) {
-        this.content = content;
+    @DynamoDbSortKey
+    public Long getJudgmentResultId() {
+        return judgmentResultId;
     }
 
-    public void setProblemSubmissionId(String problemSubmissionId) {
-        this.problemSubmissionId = problemSubmissionId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
-
-    @Override
-    public String toString() {
+    public String getContent() {
         return content;
     }
 }

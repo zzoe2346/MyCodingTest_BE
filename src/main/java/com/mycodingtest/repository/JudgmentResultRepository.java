@@ -1,11 +1,11 @@
 package com.mycodingtest.repository;
 
 import com.mycodingtest.entity.JudgmentResult;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
+
 public interface JudgmentResultRepository extends JpaRepository<JudgmentResult, Long> {
-    Page<JudgmentResult> findJudgmentResultsByUserId(Long userId, Pageable pageable);
+    List<JudgmentResult> findBySolvedProblemId(Long solveProblemId);
 }
 
