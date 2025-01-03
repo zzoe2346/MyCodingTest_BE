@@ -16,7 +16,7 @@ public class Code {
         this.solveProblemId = solveProblemId;
     }
 
-    protected Code() {
+    public Code() {
     }
 
     @DynamoDbPartitionKey
@@ -31,5 +31,17 @@ public class Code {
 
     public String getContent() {
         return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public void setJudgmentResultId(Long judgmentResultId) {
+        this.judgmentResultId = judgmentResultId;
+    }
+
+    public void setSolveProblemId(Long solveProblemId) {
+        this.solveProblemId = solveProblemId;
     }
 }
