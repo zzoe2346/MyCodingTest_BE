@@ -1,6 +1,8 @@
 package com.mycodingtest.service;
 
+import com.mycodingtest.dto.SolvedProblemResponse;
 import com.mycodingtest.dto.SolvedProblemWithReviewResponse;
+import com.mycodingtest.entity.SolvedProblem;
 import com.mycodingtest.repository.SolvedProblemRepository;
 import com.mycodingtest.util.SecurityUtil;
 import org.springframework.data.domain.Page;
@@ -20,5 +22,13 @@ public class SolvedProblemService {
         Long userId = SecurityUtil.getCurrentUserId();
         return solvedProblemRepository.findByUserId(userId, pageable)
                 .map((solvedProblem) -> new SolvedProblemWithReviewResponse(solvedProblem.getId(), solvedProblem.getProblemNumber(), solvedProblem.getProblemTitle(), solvedProblem.getRecentSubmitAt(), solvedProblem.getRecentResultText(), solvedProblem.isFavorite(), solvedProblem.getReview().getId(), solvedProblem.getReview().getDifficultyLevel(), solvedProblem.getReview().getImportanceLevel(), solvedProblem.getAlgorithmTagsToStrArray(), solvedProblem.isReviewed()));
+    }
+
+    public SolvedProblemResponse getSolvedProblem(Long solvedProblemId) {
+        SolvedProblem solvedProblem = solvedProblemRepository.findById(solvedProblemId)
+                .orElseThrow(() -> new RuntimeException("SolvedProblem not found"));
+
+        return new SolvedProblemResponse(solvedProblem.getRecentSubmitAt(), solvedProblem.isReviewed(), solvedProblem.isFavorite());
+
     }
 }
