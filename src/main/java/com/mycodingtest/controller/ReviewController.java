@@ -17,25 +17,25 @@ public class ReviewController {
         this.reviewService = reviewService;
     }
 
-    @PutMapping("/api/review/{reviewId}")
+    @PutMapping("/api/solved-problems/reviews/{reviewId}")
     public ResponseEntity<Void> updateReview(@RequestBody ReviewUpdateRequest request,
                                              @PathVariable Long reviewId) {
         reviewService.updateReview(request, reviewId);
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/api/review/{reviewId}")
+    @GetMapping("/api/solved-problems/reviews/{reviewId}")
     public ResponseEntity<ReviewResponse> getReview(@PathVariable Long reviewId) {
         return ResponseEntity.ok(reviewService.getReview(reviewId));
     }
 
-    @PostMapping("/api/review/{reviewId}/memo")
+    @PostMapping("/api/solved-problems/reviews/{reviewId}/memo")
     public void saveMemo(@RequestBody MemoSaveRequest request,
                          @PathVariable Long reviewId) {
         reviewService.saveMemo(request, reviewId);
     }
 
-    @GetMapping("/api/review/{reviewId}/memo")
+    @GetMapping("/api/solved-problems/reviews/{reviewId}/memo")
     public ResponseEntity<MemoResponse> getMemo(@PathVariable Long reviewId) {
         return ResponseEntity.ok(reviewService.getMemo(reviewId));
     }

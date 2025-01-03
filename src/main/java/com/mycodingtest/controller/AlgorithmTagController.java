@@ -15,14 +15,14 @@ public class AlgorithmTagController {
         this.algorithmTagService = algorithmTagService;
     }
 
-    @PutMapping("/api/solved-problem/{solvedProblemId}/tag")
+    @PutMapping("/api/solved-problems/{solvedProblemId}/tags")
     public ResponseEntity<Void> setTags(@PathVariable Long solvedProblemId,
                                         @RequestBody AlgorithmTagSetRequest request) {
         algorithmTagService.setAlgorithmTags(solvedProblemId, request);
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/api/solved-problem/{solvedProblemId}/tag")
+    @GetMapping("/api/solved-problems/{solvedProblemId}/tags")
     public ResponseEntity<AlgorithmTagResponse> getTags(@PathVariable Long solvedProblemId) {
         return ResponseEntity.ok(algorithmTagService.getAlgorithmTags(solvedProblemId));
     }
