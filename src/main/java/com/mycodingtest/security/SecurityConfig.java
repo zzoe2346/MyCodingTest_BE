@@ -55,7 +55,7 @@ public class SecurityConfig {
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((authorize) ->
                         authorize
-                                .requestMatchers("/", "/sign-in", "/sign-up", "/h2-console/**").permitAll()
+                                .requestMatchers("/", "/sign-in", "/sign-up", "/h2-console/**", "swagger-ui/**", "/v3/**").permitAll()
                                 .requestMatchers("/admin").hasRole("ADMIN")
                                 .anyRequest().authenticated()
                 )
