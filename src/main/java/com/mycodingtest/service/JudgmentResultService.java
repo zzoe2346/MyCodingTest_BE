@@ -10,6 +10,7 @@ import com.mycodingtest.entity.User;
 import com.mycodingtest.repository.JudgmentResultRepository;
 import com.mycodingtest.repository.SolvedProblemRepository;
 import com.mycodingtest.repository.UserRepository;
+import com.mycodingtest.util.SecurityUtil;
 import io.awspring.cloud.dynamodb.DynamoDbTemplate;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
@@ -35,7 +36,8 @@ public class JudgmentResultService {
     }
 
     @Transactional
-    public void saveJudgmentResult(JudgmentResultSaveRequest request, Long userId) {
+    public void saveJudgmentResult(JudgmentResultSaveRequest request) {
+        Long userId = SecurityUtil.getCurrentUserId();
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
@@ -46,8 +48,7 @@ public class JudgmentResultService {
         solvedProblem.setRecentResultText(request.resultText());
 
         Long solvedProblemId = solvedProblemRepository.save(solvedProblem).getId();
-        Long judgmentId = judgmentResultRepository.save(new JudgmentResult(request.baekjoonId(), request.codeLength(), request.submissionId(), request.language(), request.memory(), request.problemNumber(), request.resultText(), request.submissionId(), request.submittedAt(), request.time(), user, solvedProblem)).getId();
-
+        Long judgmentId = judgmentResultRepository.save(new JudgmentResult(request.baekjoonId(), request.codeLength(), request.language(), request.memory(), request.problemNumber(), request.resultText(), request.submissionId(), request.submittedAt(), request.time(), user, solvedProblem)).getId();
         dynamoDbTemplate.save(new Code(solvedProblemId, judgmentId, request.code()));
     }
 

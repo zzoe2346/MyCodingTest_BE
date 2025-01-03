@@ -3,11 +3,9 @@ package com.mycodingtest.controller;
 import com.mycodingtest.dto.JudgmentResultResponse;
 import com.mycodingtest.dto.JudgmentResultSaveRequest;
 import com.mycodingtest.dto.SubmittedCodeResponse;
-import com.mycodingtest.security.UserDetails;
 import com.mycodingtest.service.JudgmentResultService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,9 +20,8 @@ public class JudgmentResultController {
     }
 
     @PostMapping("/api/solved-problems/judgment-results")
-    public ResponseEntity<String> saveJudgmentResult(@RequestBody JudgmentResultSaveRequest request,
-                                                     @AuthenticationPrincipal UserDetails userDetails) {
-        judgmentResultService.saveJudgmentResult(request, userDetails.getUserId());
+    public ResponseEntity<String> saveJudgmentResult(@RequestBody JudgmentResultSaveRequest request) {
+        judgmentResultService.saveJudgmentResult(request);
         return ResponseEntity.status(HttpStatus.CREATED).body("JudgmentResult saved successfully");
     }
 
