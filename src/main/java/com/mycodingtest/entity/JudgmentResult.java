@@ -34,10 +34,9 @@ public class JudgmentResult {
     @JoinColumn(nullable = false)
     private SolvedProblem solvedProblem;
 
-    public JudgmentResult(String baekjoonId, int codeLength, Long id, String language, int memory, int problemId, String resultText, Long submissionId, LocalDateTime submittedAt, int time, User user, SolvedProblem solvedProblem) {
+    public JudgmentResult(String baekjoonId, int codeLength, String language, int memory, int problemId, String resultText, Long submissionId, LocalDateTime submittedAt, int time, User user, SolvedProblem solvedProblem) {
         this.baekjoonId = baekjoonId;
         this.codeLength = codeLength;
-        this.id = id;
         this.language = language;
         this.memory = memory;
         this.problemId = problemId;
